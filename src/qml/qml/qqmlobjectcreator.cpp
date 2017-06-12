@@ -1237,7 +1237,9 @@ void connectSlotsByName(QObject *objectWithSlots, QObject *o)
 
             // ...for the presence of a matching signal "on_<objectName>_<signal>".
             const QMetaObject *smeta;
-            int sigIndex = QObjectPrivate::get(co)->signalIndex(signal, &smeta);
+            //int sigIndex = QObjectPrivate::get(co)->signalIndex(signal, &smeta);
+            int sigIndex = co->metaObject()->indexOfSignal(signal);
+
             if (sigIndex < 0) {
                 // if no exactly fitting signal (name + complete parameter type list) could be found
                 // look for just any signal with the correct name and at least the slot's parameter list.
@@ -1311,7 +1313,6 @@ QQmlContextData *QQmlObjectCreator::finalize(QQmlInstantiationInterrupt &interru
     QQmlObjectCreatorRecursionWatcher watcher(this);
     ActiveOCRestorer ocRestorer(this, QQmlEnginePrivate::get(engine));
 
-    connectToCodeBehind();
 
     while (!sharedState->allCreatedBindings.isEmpty()) {
         QQmlAbstractBinding::Ptr b = sharedState->allCreatedBindings.pop();
@@ -1369,6 +1370,8 @@ QQmlContextData *QQmlObjectCreator::finalize(QQmlInstantiationInterrupt &interru
         if (watcher.hasRecursed() || interrupt.shouldInterrupt())
             return 0;
     }
+
+    connectToCodeBehind();
 
     phase = Done;
 
