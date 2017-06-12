@@ -1302,6 +1302,8 @@ void QQmlObjectCreator::connectToCodeBehind()
 
         QObject *codeBehind = qqmlcodeBehindList.value(id);
         connectSlotsByName(codeBehind, qmlObject);
+        codeBehind->setProperty(id.toUtf8().constData(), QVariant::fromValue(qmlObject));
+        qmlObject->setProperty("cpp", QVariant::fromValue(codeBehind));
     }
 }
 
